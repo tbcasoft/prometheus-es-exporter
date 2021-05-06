@@ -17,6 +17,8 @@ COPY tc-exporter.cfg .
 COPY entrypoint.sh .
 RUN chmod +x entrypoint.sh
 
+RUN mkdir -p /logs
+
 EXPOSE 9206
 
 ENTRYPOINT ["./entrypoint.sh"]
