@@ -7,4 +7,4 @@ then
 	config="tc-exporter.cfg"
 fi
 
-python -u /usr/local/bin/prometheus-es-exporter -c $config $*  2>&1 | tee -a /logs/prometheus-es-exporter.log
+python -u /usr/local/bin/prometheus-es-exporter -c $config $* >> /logs/prometheus-es-exporter.log 2>&1
