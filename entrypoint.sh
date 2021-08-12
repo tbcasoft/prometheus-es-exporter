@@ -7,4 +7,6 @@ then
 	config="tc-exporter.cfg"
 fi
 
-python -u /usr/local/bin/prometheus-es-exporter -c $config $* >> /logs/es-prometheus-exporter.log 2>&1
+logFilePath="/logs/es-prometheus-exporter.log"
+echo "Use configuration file: $config, and the other arguments of command: $*" >> $logFilePath
+python -u /usr/local/bin/prometheus-es-exporter -c $config $* >> $logFilePath 2>&1
