@@ -1,5 +1,3 @@
-import click
-import click_config_file
 import configparser
 import glob
 import json
@@ -8,6 +6,8 @@ import os
 import sched
 import time
 
+import click
+import click_config_file
 from elasticsearch import Elasticsearch
 from elasticsearch.exceptions import ConnectionTimeout
 from jog import JogFormatter
@@ -510,10 +510,18 @@ def cli(**options):
     if es_cluster == ['consul']:
         consul_host = options['consul_host']
         consul_port = options['consul_port']
-        log.info('Connecting to Consul agent at {}:{}.'.format(consul_host, consul_port))
-        consul_client.connect(consul_host, consul_port)
 
-        es_cluster = [consul_client.get_service_address(options['es_service'])]
+        # check consul connection
+        while 1:
+            try:
+                log.info('Connecting to Consul agent at {}:{}...'.format(consul_host, consul_port))
+                consul_client.connect(consul_host, consul_port)
+                es_cluster = [consul_client.get_service_address(options['es_service'])]
+                break
+            except Exception:
+                log.info('retrying to connect to consul after 5 seconds...')
+                time.sleep(5)
+                continue
         log.info('Found Elasticsearch registered at {}.'.format(es_cluster))
 
     if options['ca_certs']:
@@ -527,6 +535,18 @@ def cli(**options):
         es_client = Elasticsearch(es_cluster,
                                   verify_certs=False,
                                   http_auth=http_auth)
+    # check es health
+    while 1:
+        try:
+            log.info('Checking Elasticsearch client health...')
+            es_client.cluster.health()
+            break
+        except Exception:
+            log.info('Elasticsearch client is not ready. Retry after 5 seconds...')
+            time.sleep(5)
+            continue
+
+    log.info('Elasticsearch is ready')
 
     scheduler = None
 
