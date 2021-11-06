@@ -512,7 +512,7 @@ def cli(**options):
         consul_port = options['consul_port']
 
         # check consul connection
-        while 1:
+        while True:
             try:
                 log.info('Connecting to Consul agent at {}:{}...'.format(consul_host, consul_port))
                 consul_client.connect(consul_host, consul_port)
@@ -536,7 +536,7 @@ def cli(**options):
                                   verify_certs=False,
                                   http_auth=http_auth)
     # check es health
-    while 1:
+    while True:
         try:
             log.info('Checking Elasticsearch client health...')
             es_client.cluster.health()
