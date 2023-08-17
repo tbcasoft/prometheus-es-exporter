@@ -7,6 +7,7 @@ WORKDIR /usr/src/app
 
 COPY setup.py .
 COPY README.md .
+RUN pip install --upgrade pip
 RUN pip install -e .
 
 # copy content into work directory
